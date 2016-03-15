@@ -7,12 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Parse/Parse.h>
 #import "ScheduleCell.h"
 
 @interface ScheduleViewController : UITableViewController<UITableViewDelegate>  {
     
-    NSArray *scheduleDataArray;
+       NSMutableArray *hoursObjectArray;
     
 }
 

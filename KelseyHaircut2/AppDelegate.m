@@ -7,9 +7,13 @@
 //
 
 #import "AppDelegate.h"
-#import <Parse/Parse.h>
+
 
 @implementation AppDelegate
+
+static NSString *APP_ID = @"F443F0E9-D3E9-2FA5-FFBB-AA6A88DE2D00";
+static NSString *SECRET_KEY = @"5D181B3E-3F29-A2D5-FF8A-CDFC24196900";
+static NSString *VERSION_NUM = @"v1";
 
 - (void)dealloc
 {
@@ -20,13 +24,27 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     
-    [Parse setApplicationId:@"QLPAKh7OtIzfVFz5twJ4IxUcfa0YizAEM6Y2ZH9c"
-                  clientKey:@"uPQb02tNXpRzWSyzXebyiO8JG5I6VuhED4FyTmHF"];
-    
-    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
-    
-    
+      
     // Override point for customization after application launch.
+    
+    [backendless initApp:APP_ID secret:SECRET_KEY version:VERSION_NUM];
+    backendless.hostURL = @"https://api.backendless.com";
+    
+#if IS_COREDATA_ON
+    
+    _managedObjectModel = nil;
+    _persistentStoreCoordinator = nil;
+    _managedObjectContext = nil;
+    
+    [self managedObjectContext];
+    
+    __types.managedObjectModel = _managedObjectModel;
+    __types.managedObjectContext = _managedObjectContext;
+    
+#endif
+
+    
+    
     return YES;
 }
 							

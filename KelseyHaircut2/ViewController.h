@@ -25,7 +25,13 @@
 @property (retain, nonatomic) IBOutlet UIButton *emailkelseybutton;
 @property (retain, nonatomic) IBOutlet UIButton *callkelseybutton;
 @property (retain, nonatomic) IBOutlet UIButton *dateSelectedButton;
-@property (retain, nonatomic) IBOutlet UIButton *aboutKelsey;
+@property (retain, nonatomic) IBOutlet UIButton *mapButton;
+@property (retain, nonatomic) IBOutlet UIButton *servicesButton;
+@property (retain, nonatomic) IBOutlet UIButton *galleryButton;
+@property (retain, nonatomic) IBOutlet UIButton *scheduleAppointmentButton;
+@property (retain, nonatomic) IBOutlet UIButton *hoursButton;
+
+
 
 
 

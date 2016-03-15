@@ -7,6 +7,8 @@
 //
 
 #import "ScheduleViewController.h"
+#import "Backendless.h"
+#import "HoursObject.h"
 
 #define IS_IPHONE (!IS_IPAD)
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone)
@@ -37,41 +39,62 @@
     
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"wallpaperblackconcreteshort.jpg"]];
     
-    [self performSelector:@selector(retrieveFromParse)];
+    [self performSelector:@selector(retrieveFromBackendless)];
     
         
     [scheduleTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     self.scheduleTableView.backgroundColor = [UIColor blackColor];
     
+    [scheduleTableView reloadData];
+    
 }
 
-- (void) retrieveFromParse {
-    
-    PFQuery *retrieveMenu = [PFQuery queryWithClassName:@"hours"];
-    [retrieveMenu orderByAscending:@"sort"];
+- (void) retrieveFromBackendless {
     
     
     
+    hoursObjectArray = [[NSMutableArray alloc] initWithCapacity:7];
     
-    [retrieveMenu findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    
+    @try {
+        BackendlessDataQuery *query = [BackendlessDataQuery query];
+        QueryOptions *queryOptions = [QueryOptions new];
+        queryOptions.sortBy = @[@"sort ASC"];
+        query.queryOptions = queryOptions;
         
-        NSLog(@"%@",objects);
+        NSDate *startTime = [NSDate date];
+        BackendlessCollection *objects = [[backendless.persistenceService of:[HoursObject class]] find: query];
         
-        if (!error)  {
-            scheduleDataArray = [[NSArray alloc] initWithArray:objects];
+        NSArray *currentPage =[objects getCurrentPage];
+        NSLog(@"Loaded %lu hours objects", (unsigned long)[currentPage count]);
+        NSLog(@"Total hours objects in the Backendless starage - %@", [objects getTotalObjects]);
+        
+        for (HoursObject *hoursObject in currentPage) {
+            NSLog(@"Hours day of week = %@", hoursObject.dayofweek);
+            NSLog(@"Hours hours = %@", hoursObject.hours);
+            
+            [hoursObjectArray addObject:hoursObject];
+            
+            
         }
         
-        [scheduleTableView reloadData];
-    }];
+       
+        
+        NSLog(@"Total time (ms) - %g", 1000*[[NSDate date] timeIntervalSinceDate:startTime]);
+        
+        NSLog(@"%@",hoursObjectArray);
+    }
     
+    @catch (Fault *fault) {
+        NSLog(@"Server reported an error: %@", fault);
+    }
     
-    
-    
-    
-    
-    
+   
+
 }
+    
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -92,7 +115,7 @@
 {
     
     // Return the number of rows in the section.
-    return scheduleDataArray.count;
+    return hoursObjectArray.count;
     
 }
 
@@ -110,9 +133,9 @@
     
     if (cell == nil) {
         cell = [[ScheduleCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];}
-    PFObject *tempObject = [scheduleDataArray objectAtIndex:indexPath.row];
-    cell.dayofweek.text = [tempObject objectForKey:@"dayofweek"];
-    cell.hours.text = [tempObject objectForKey:@"hours"];
+    HoursObject *tempObject = [hoursObjectArray objectAtIndex:indexPath.row];
+    cell.dayofweek.text = tempObject.dayofweek;
+    cell.hours.text = tempObject.hours;
     
     if (IS_IPAD)  {
         

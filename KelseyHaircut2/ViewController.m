@@ -29,7 +29,11 @@
 @synthesize emailkelseybutton;
 @synthesize callkelseybutton;
 @synthesize daysSinceButton;
-@synthesize aboutKelsey;
+@synthesize mapButton;
+@synthesize galleryButton;
+@synthesize servicesButton;
+@synthesize scheduleAppointmentButton;
+@synthesize hoursButton;
 
 
 
@@ -72,15 +76,16 @@
     
     [datePicker setHidden:NO];
     [dateSelectedButton setHidden:NO];
-    [aboutKelsey setHidden:YES];
+    [mapButton setHidden:YES];
     [daysSinceButton setHidden: YES];
-    
-    //  [emailkelseybutton setHidden:YES];
-    
-    //  [seteventbutton setHidden:YES];
-    
-    //  [callkelseybutton setHidden:YES];
-    
+    [servicesButton setHidden:YES];
+    [emailkelseybutton setHidden:YES];
+    [callkelseybutton setHidden:YES];
+    [galleryButton setHidden:YES];
+    [scheduleAppointmentButton setHidden:YES];
+    [hoursButton setHidden:YES];
+
+       
     
     
     NSDate *now = [NSDate date];
@@ -98,7 +103,15 @@
     [datePicker setHidden:YES];
     [dateSelectedButton setHidden:YES];
     [daysSinceButton setHidden:NO];
-    [aboutKelsey setHidden:NO];
+    [mapButton setHidden:NO];
+    [galleryButton setHidden:NO];
+    [servicesButton setHidden:NO];
+    [callkelseybutton setHidden:NO];
+    [emailkelseybutton setHidden:NO];
+    [scheduleAppointmentButton setHidden:NO];
+    [hoursButton setHidden:NO];
+
+    
     
     
     
@@ -278,11 +291,11 @@
     [datePicker release];
     [emailkelseybutton release];
     [callkelseybutton release];
- 
+    [galleryButton release];
     [daysSinceButton release];
     [dateSelectedButton release];
-    
-    [aboutKelsey release];
+    [servicesButton release];
+    [mapButton release];
     [super dealloc];
 }
 

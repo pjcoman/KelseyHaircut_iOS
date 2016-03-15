@@ -7,6 +7,8 @@
 //
 
 #import "ServicesViewController.h"
+#import "Backendless.h"
+#import "ServicesObject.h"
 
 #define IS_IPHONE (!IS_IPAD)
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone)
@@ -35,7 +37,7 @@
 {
     [super viewDidLoad];
     
-    [self performSelector:@selector(retrieveFromParse)];
+    [self performSelector:@selector(retrieveFromBackendless)];
     
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"wallpaperblackconcreteshort.jpg"]];
     
@@ -43,30 +45,54 @@
     [servicesTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     self.servicesTableView.backgroundColor = [UIColor blackColor];
+    
+    servicesTableView.estimatedRowHeight = 60.0;
+    
+    servicesTableView.rowHeight = UITableViewAutomaticDimension;
+    
+    [servicesTableView reloadData];
 }
 
-- (void) retrieveFromParse {
+- (void) retrieveFromBackendless {
     
-    PFQuery *retrieveMenu = [PFQuery queryWithClassName:@"services"];
-    [retrieveMenu orderByAscending:@"sort"];
-    
+    servicesObjectArray = [[NSMutableArray alloc] initWithCapacity:30];
     
     
-    
-    [retrieveMenu findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    @try {
+        BackendlessDataQuery *query = [BackendlessDataQuery query];
+        QueryOptions *queryOptions = [QueryOptions new];
+        queryOptions.sortBy = @[@"sort ASC"];
+        query.queryOptions = queryOptions;
         
-        NSLog(@"%@",objects);
+        NSDate *startTime = [NSDate date];
+        BackendlessCollection *objects = [[backendless.persistenceService of:[ServicesObject class]] find: query];
         
-        if (!error)  {
-            servicesDataArray = [[NSArray alloc] initWithArray:objects];
+        NSArray *currentPage =[objects getCurrentPage];
+        NSLog(@"Loaded %lu service objects", (unsigned long)[currentPage count]);
+        NSLog(@"Total service objects in the Backendless starage - %@", [objects getTotalObjects]);
+        
+        for (ServicesObject *serviceObject in currentPage) {
+            NSLog(@"Service = %@", serviceObject.service);
+            NSLog(@"Price = %@", serviceObject.price);
+            
+            [servicesObjectArray addObject:serviceObject];
+            
+            
         }
         
-        [servicesTableView reloadData];
-    }];
+        
+        
+        NSLog(@"Total time (ms) - %g", 1000*[[NSDate date] timeIntervalSinceDate:startTime]);
+        
+        NSLog(@"%@",servicesObjectArray);
+    }
+    
+    @catch (Fault *fault) {
+        NSLog(@"Server reported an error: %@", fault);
+    }
     
     
-    
-    
+
     
     
     
@@ -91,7 +117,7 @@
 {
     
     // Return the number of rows in the section.
-    return servicesDataArray.count;
+    return servicesObjectArray.count;
     
 }
 
@@ -109,10 +135,14 @@
     
     if (cell == nil) {
         cell = [[ServicesCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];}
-    PFObject *tempObject = [servicesDataArray objectAtIndex:indexPath.row];
-    cell.service.text = [tempObject objectForKey:@"service"];
-    cell.price.text = [tempObject objectForKey:@"price"];
     
+    ServicesObject *tempObject = [servicesObjectArray objectAtIndex:indexPath.row];
+    cell.service.text = tempObject.service;
+    cell.price.text = tempObject.price;
+    
+    
+
+        
     if (IS_IPAD)  {
         
         cell.service.font = [UIFont fontWithName:@"Chalkduster" size:30];

@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Parse/Parse.h>
 #import "ServicesCell.h"
 
 @interface ServicesViewController : UITableViewController<UITableViewDelegate>  {
     
-    NSArray *servicesDataArray;
+    NSMutableArray *servicesObjectArray;
+
     
 }
 
